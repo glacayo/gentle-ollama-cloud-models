@@ -32,6 +32,7 @@ import {
   type CloudModelDef,
 } from "../src/catalog.ts";
 import { readCache, writeCache, cacheFilePath } from "../src/cache.ts";
+import { SNAPSHOT as snapshotCache } from "../src/catalog-snapshot.ts";
 
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 const STARTUP_TIMEOUT_MS = 15_000;
@@ -256,9 +257,25 @@ function createDefaultLoader(pi: ExtensionAPI): CloudLoader {
   });
 }
 
-/** The factory is synchronous; lifecycle wiring starts the loader on session_start. */
-export default function (pi: ExtensionAPI): void {
+/** The factory registers a catalog immediately so `--list-models` and instant
+ * sessions see models right away; the live refresh then replaces it.
+ * Priority: local cache (fresher for long-lived installs) > bundled snapshot. */
+export default async function (pi: ExtensionAPI): Promise<void> {
   const loader = createDefaultLoader(pi);
+
+  // Fast local I/O: Pi awaits this async factory before listing models.
+  let initial: CloudModelDef[] = snapshotCache.models;
+  try {
+    const cached = await readCache(cacheFilePath());
+    if (cached && cached.models.length > 0) initial = cached.models;
+  } catch {
+    // fall back to the bundled snapshot
+  }
+  try {
+    registerModels(pi, initial);
+  } catch {
+    // Registration failures surface through the loader's status handling.
+  }
 
   pi.on("session_start", (_event, ctx) => {
     void loader.start(ctx).catch(() => {});
