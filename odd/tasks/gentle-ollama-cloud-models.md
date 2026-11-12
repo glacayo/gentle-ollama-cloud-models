@@ -15,12 +15,14 @@ S8. The published package must include the `pi-package` keyword and an npm READM
 
 ## Tasks
 
-T1. Create the GitHub repository `glacayo/gentle-ollama-cloud-models` and local scaffold (package.json, LICENSE, .gitignore, README skeleton, extensions/, test/, .github/workflows/). → S1, S7
-T2. Implement the provider extension: model discovery, capability enrichment, provider registration, cache, refresh/status commands. → S2, S3, S4, S5, S6
-T3. Write unit tests for model normalization, capability enrichment, cache behavior, and provider registration with mocked fetch. → S7
-T4. Copy and adapt the `tps-gentle-pi` CI/publish workflows, add verify-package script, and ensure Node 24 type-stripping works. → S7
-T5. Publish v0.1.0 to npm, verify the package appears on https://pi.dev/packages, and update README with install/usage instructions. → S8
+T1. Create the GitHub repository `glacayo/gentle-ollama-cloud-models` and local scaffold. Commit 8a57d47. → S1, S7
+T2. Implement the provider extension: model discovery, capability enrichment, provider registration, cache, refresh/status commands. Commit 8b599eb. → S2, S3, S4, S5, S6
+T3. Write unit tests for model normalization, capability enrichment, cache behavior, and provider registration with mocked fetch. Commit 8b599eb (18 tests, all green). → S7
+T4. Copy and adapt the `tps-gentle-pi` CI/publish workflows, add verify-package script. Commit 8b599eb; CI run 43285344641 green. → S7
+T5. Publish v0.1.0 to npm, verify the package appears on https://pi.dev/packages. → S8
+T6. Smoke-test the extension in real Pi: `pi -e ./extensions/ollama-cloud.ts --list-models` shows `ollama-cloud` with 33 models, real context windows. Verified 2026-11-12. → S2, S3, S4
 
 ## Log
 
 L1. "Necesito que creemos un packacge para PI y Gentle-Shell, Mejor que este package : https://github.com/riogesulgon/pi-ollama-cloud-models obviamente usando toda la documentacion disponible sobre Ollama Cloud y el uso de su api de su propia documentacion, asi como su registro en los providers de pi, actualizacion de modelos, datos correctos de contexto de cada modelo y effords disponibles https://docs.ollama.com/cloud . puedes crearlo como un repositorio publico en github con mi cuenta glacayo y tambien necesito que aparzca en la biblioteca de package en pi y npm https://pi.dev/packages . actualmente tengo un package publicado que aparece en pi y se despliega en npm automaticamente podemos adoptar ese workflow https://github.com/glacayo/tps-gentle-pi"
+L2. Evidence 2026-11-12: live catalog probe fetched 22 chat models (plus more appearing over time); real context windows from /v1/models (beam 1048576, gemma4:31b 262144, minimax-m3 512000, gpt-oss 131072); per-model efforts from supported_reasoning_levels (beam low..max, glm-5.3 low/high/max). /api/show gives capabilities (thinking, vision, tools). clef:27b excluded (supported_in_api false). Decision: catalog metadata wins over /api/show for contextWindow (cloud serving limit vs model-card default).
