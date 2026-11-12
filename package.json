@@ -1,0 +1,52 @@
+{
+  "name": "gentle-ollama-cloud-models",
+  "version": "0.1.0",
+  "description": "Ollama Cloud provider for Pi and Gentle-Shell with live model discovery",
+  "author": "glacayo",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glacayo/gentle-ollama-cloud-models.git"
+  },
+  "homepage": "https://github.com/glacayo/gentle-ollama-cloud-models#readme",
+  "bugs": {
+    "url": "https://github.com/glacayo/gentle-ollama-cloud-models/issues"
+  },
+  "keywords": [
+    "pi",
+    "pi-package",
+    "pi-extension",
+    "gentle-shell",
+    "ollama",
+    "ollama-cloud"
+  ],
+  "pi": {
+    "extensions": ["./extensions"]
+  },
+  "files": [
+    "extensions/",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.ts\"",
+    "verify:package": "node scripts/verify-package-files.mjs",
+    "release:check": "npm test && npm run verify:package"
+  }
+}
